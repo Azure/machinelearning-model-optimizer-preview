@@ -46,6 +46,12 @@ Please follow this [example](https://github.com/Azure/azureml-examples/blob/xiyo
 
 #### Create a compute to host the optimizer
 
+You will need a compute to host the optimizer, run the optimization program and generate final reports. We would suggest you to use the same sku type that you intend to deploy your model with.
+
+  ```bash
+  az ml compute create --name $OPTIMIZER_COMPUTE_NAME --size $OPTIMIZER_COMPUTE_SIZE --identity-type SystemAssigned --type amlcompute
+  ```
+
 #### Create an optimization job
 
 Prepare an optimization configuration json file. Below is a sample configuration file.
@@ -94,6 +100,22 @@ inputs:
 ### Step 2: Deploy an online-endpoint with the optimized model and optimized parameters
 
 #### Create a compute to host the deployer
+
+* You will need a compute to host the deployer, run the online-endpoints deployment program and generate final reports. You may choose any sku type for this job.
+
+  ```bash
+  az ml compute create --name $DEPLOYER_COMPUTE_NAME --size $DEPLOYER_COMPUTE_SIZE --identity-type SystemAssigned --type amlcompute
+  ```
+
+* Create proper role assignment for accessing online endpoint resources. The compute needs to have contributor role to the machine learning workspace. For more information, see [Assign Azure roles using Azure CLI](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli).
+
+  ```bash
+  compute_info=`az ml compute show --name $DEPLOYER_COMPUTE_NAME --query '{"id": id, "identity_object_id": identity.principal_id}' -o json`
+  workspace_resource_id=`echo $compute_info | jq -r '.id' | sed 's/\(.*\)\/computes\/.*/\1/'`
+  identity_object_id=`echo $compute_info | jq -r '.identity_object_id'`
+  az role assignment create --role Contributor --assignee-object-id $identity_object_id --scope $workspace_resource_id
+  if [[ $? -ne 0 ]]; then echo "Failed to create role assignment for compute $DEPLOYER_COMPUTE_NAME" && exit 1; fi
+  ```
 
 #### Create an online-endpoints deployer job
 
@@ -166,6 +188,22 @@ inputs:
 
 #### Create a compute to host the profiler
 
+* You will need a compute to host the profiler, run the profiling program and generate final reports. Please choose a compute SKU with proper network bandwidth (considering the inference request payload size and profiling traffic, we'd recommend Standard_F4s_v2) in the same region as the online endpoint or your model inference service.
+
+  ```bash
+  az ml compute create --name $PROFILER_COMPUTE_NAME --size $PROFILER_COMPUTE_SIZE --identity-type SystemAssigned --type amlcompute
+  ```
+
+* Create proper role assignment for accessing online endpoint resources. The compute needs to have contributor role to the machine learning workspace. For more information, see [Assign Azure roles using Azure CLI](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli).
+
+  ```bash
+  compute_info=`az ml compute show --name $PROFILER_COMPUTE_NAME --query '{"id": id, "identity_object_id": identity.principal_id}' -o json`
+  workspace_resource_id=`echo $compute_info | jq -r '.id' | sed 's/\(.*\)\/computes\/.*/\1/'`
+  identity_object_id=`echo $compute_info | jq -r '.identity_object_id'`
+  az role assignment create --role Contributor --assignee-object-id $identity_object_id --scope $workspace_resource_id
+  if [[ $? -ne 0 ]]; then echo "Failed to create role assignment for compute $PROFILER_COMPUTE_NAME" && exit 1; fi
+  ```
+
 #### Create a profiling job
 
 Prepare a profiling configuration json file. Below is a sample configuration file.
@@ -211,9 +249,25 @@ inputs:
 
 #### Create a compute to host the deleter
 
+* You will need a compute to host the deleter, run the online-endpoints deletion program and generate final reports. You may choose any sku type for this job.
+
+  ```bash
+  az ml compute create --name $DELETER_COMPUTE_NAME --size $DELETER_COMPUTE_SIZE --identity-type SystemAssigned --type amlcompute
+  ```
+
+* Create proper role assignment for accessing online endpoint resources. The compute needs to have contributor role to the machine learning workspace. For more information, see [Assign Azure roles using Azure CLI](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli).
+
+  ```bash
+  compute_info=`az ml compute show --name $DELETER_COMPUTE_NAME --query '{"id": id, "identity_object_id": identity.principal_id}' -o json`
+  workspace_resource_id=`echo $compute_info | jq -r '.id' | sed 's/\(.*\)\/computes\/.*/\1/'`
+  identity_object_id=`echo $compute_info | jq -r '.identity_object_id'`
+  az role assignment create --role Contributor --assignee-object-id $identity_object_id --scope $workspace_resource_id
+  if [[ $? -ne 0 ]]; then echo "Failed to create role assignment for compute $DELETER_COMPUTE_NAME" && exit 1; fi
+  ```
+
 #### Create an online-endpoints deleter job
 
-Below is a sample yaml file that defines a wrk profiling job.
+Below is a sample yaml file that defines an online-endpoints deleter job.
 
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
@@ -236,6 +290,10 @@ inputs:
 ```
 
 #### Understand job output
+
+
+## Job yaml syntax and configuration definitions
+
 
 
 
