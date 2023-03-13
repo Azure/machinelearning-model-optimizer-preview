@@ -438,13 +438,11 @@ Currently we support setting the following OLive configs:
 <td> <code>endpoint_name</code> </td> 
 <td> 
 
-```text
 [Optional] the name of the online endpoint
 
 Required, if users want to get resource usage metrics in the profiling reports, such as CpuUtilizationPercentage, CpuMemoryUtilizationPercentage, etc.
 
 If <code>scoring_uri</code> is not provided, the system will try to get the scoring_uri from the endpoint info provided by the user, including <code>subscription_id</code>, <code>resource_group</code>, <code>workspace_name</code> and <code>endpoint_name</code>
-```
 
 </td> <td> my-endpoint </td> <td> - </td>
 </tr>
