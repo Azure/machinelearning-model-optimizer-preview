@@ -349,11 +349,72 @@ The deleter job won't generate any output files, but you may also use the below 
   
   ```bash
   az ml job download --name $DELETER_JOB_NAME --all --download-path $DELETER_DOWNLOAD_FOLDER
-  
+  ```
+
 ## Job configuration specifications
+
 ### OLive optimizer configuration
 
-
+Currently we support setting the following OLive configs:
+<table>
+<tr>
+<td> Configuration </td> <td> Definition </td> <td> Example </td> <td> Default Values </td>
+</tr>
+<tr>
+<td> <code>inputs_spec</code> </td> <td> [Optional] dictionary of input’s names and shapes </td> 
+<td> 
+```json
+{
+  "attention_mask": [1, 7],
+  "input_ids": [1, 7],
+  "token_type_ids": [1, 7]
+}
+```
+</td> <td> - </td>
+</tr>
+<tr>
+<td> <code>model_file_path</code> </td> <td> [Required] relative path to the model inside of the model folder </td> <td> "./model.onnx" </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>output_names</code> </td> <td> [Optional] comma-separated list of names of output nodes of model </td> <td> "scores" </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>providers_list</code> </td> <td> [Optional] providers used for perftuning </td> <td> ["cpu", "dnnl"] </td> <td> Available providers obtained by onnx runtime </td>
+</tr>
+<tr>
+<td> <code>trt_fp16_enabled</code> </td> <td> [Optional] whether enable fp16 mode for TensorRT </td> <td> true </td> <td> false </td>
+</tr>
+<tr>
+<td> <code>quantization_enabled</code> </td> <td> [Optional] whether enable quantization optimization or not </td> <td> true </td> <td> false </td>
+</tr>
+<tr>
+<td> <code>transformer_enabled</code> </td> <td> [Optional] whether enable transformer optimization or not </td> <td> true </td> <td> false </td>
+</tr>
+<tr>
+<td> <code>transformer_args</code> </td> <td> [Optional] onnxruntime transformer optimizer args </td> <td> "--model_type bert --num_heads 12" </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>concurrency_num</code> </td> <td> [Optional] tuning process concurrency number </td> <td> 2 </td> <td> 1 </td>
+</tr>
+<tr>
+<td> <code>inter_thread_num_list</code> </td> <td> [Optional] list of inter thread number for perftuning </td> <td> [1,2,4] </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>intra_thread_num_list</code> </td> <td> [Optional] list of intra thread number for perftuning </td> <td> [1,2,4] </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>execution_mode_list</code> </td> <td> [Optional] list of execution mode for perftuning </td> <td> ["parallel"] </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>ort_opt_level_list</code> </td> <td> [Optional] onnxruntime optimization level </td> <td> ["all"] </td> <td> ["all"] </td>
+</tr>
+<tr>
+<td> <code>warmup_num</code> </td> <td> [Optional] warmup times for latency measurement </td> <td> 20 </td> <td> 10 </td>
+</tr>
+<tr>
+<td> <code>test_num</code> </td> <td> [Optional] repeat test times for latency measurement </td> <td> 200 </td> <td> 20 </td>
+</tr>
+</table>
 
 # Contributing
 
