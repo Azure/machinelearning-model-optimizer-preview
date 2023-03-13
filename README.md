@@ -499,8 +499,8 @@ If both <code>scoring_headers</code> and endpoint info are provided, the profili
 ```json
 {
   "Content-Type": "application/json",
-  "Authorization": "Bearer < inference_service_auth_key >",
-  "azureml-model-deployment": < deployment_name >"
+  "Authorization": "Bearer < auth_key >",
+  "azureml-model-deployment": "< deployment_name >"
 }
 ```
 
