@@ -423,7 +423,7 @@ Currently we support setting the following OLive configs:
 * Scoring target configs
 <table>
 <tr>
-<td> Configuration </td> <td> Definition </td> <td> Example </td> <td> Default Values </td>
+<th style="width:10%"> Configuration </th> <th style="width:50%"> Definition </th> <th style="width:20%"> Example </th> <th style="width:20%"> Default Values </th>
 </tr>
 <tr>
 <td> <code>subscription_id</code> </td> <td> [Optional] the subscription id of the online endpoint </td> <td> ea4faa5b-5e44-4236-91f6-5483d5b17d14 </td> <td> subscription id of the profiling job </td>
@@ -439,6 +439,7 @@ Currently we support setting the following OLive configs:
 <td>
 
 [Optional] the name of the online endpoint
+
 Required, if users want to get resource usage metrics in the profiling reports, such as CpuUtilizationPercentage, CpuMemoryUtilizationPercentage, etc.
 
 If <code>scoring_uri</code> is not provided, the system will try to get the scoring_uri from the endpoint info provided by the user, including <code>subscription_id</code>, <code>resource_group</code>, <code>workspace_name</code> and <code>endpoint_name</code>
