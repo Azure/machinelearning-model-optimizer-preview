@@ -71,7 +71,7 @@ Prepare an optimization configuration json file. Below is a sample configuration
 }
 ```
 
-Below is a template yaml file that defines an olive optimization job.
+Below is a template yaml file that defines an olive optimization job. For detailed info regarding how to construct a command job yaml file, please refer to this file: [aml job yaml schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command)
 
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
@@ -135,7 +135,7 @@ You may download the optimized_parameters.json file and optimized_model.onnx fil
 
 #### Create an online-endpoints deployer job
 
-Prepare an online-endpoint configuration yaml file. Below is a sample configuration file.
+Prepare an online-endpoint configuration yaml file. Below is a sample configuration file. For detailed info regarding how to construct an online-endpoint yaml file, please refer to this file: [aml online-endpoint yaml schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-endpoint-online).
 
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/managedOnlineEndpoint.schema.json
@@ -143,7 +143,7 @@ name: $ENDPOINT_NAME
 auth_mode: key
 ```
 
-Prepare an online-deployment configuration yaml file. Below is a sample configuration file.
+Prepare an online-deployment configuration yaml file. Below is a sample configuration file. For detailed info regarding how to construct an online-deployment yaml file, please refer to this file: [aml online-deployment yaml schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-deployment-managed-online).
 
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
@@ -163,7 +163,7 @@ instance_type: $INFERENCE_SERVICE_COMPUTE_SIZE
 instance_count: 1
 ```
 
-Below is a sample yaml file that defines a wrk profiling job.
+Below is a sample yaml file that defines an online-endpoints deployer job. For detailed info regarding how to construct a command job yaml file, please refer to this file: [aml job yaml schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command)
 
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
@@ -250,7 +250,7 @@ Prepare a profiling configuration json file. Below is a sample configuration fil
 }
 ```
 
-Below is a sample yaml file that defines a wrk profiling job.
+Below is a sample yaml file that defines a wrk profiling job. For detailed info regarding how to construct a command job yaml file, please refer to this file: [aml job yaml schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command)
 
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
@@ -315,7 +315,7 @@ You may download the report.json file with the following command.
 
 #### Create an online-endpoints deleter job
 
-Below is a sample yaml file that defines an online-endpoints deleter job.
+Below is a sample yaml file that defines an online-endpoints deleter job. For detailed info regarding how to construct a command job yaml file, please refer to this file: [aml job yaml schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command)
 
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
