@@ -421,7 +421,7 @@ Currently we support setting the following OLive configs:
 ### Aml profiler configuration
 
 * Scoring target configs
-<table>
+<table width="300">
 <tr>
 <td> Configuration </td> <td> Definition </td> <td> Example </td> <td> Default Values </td>
 </tr>
