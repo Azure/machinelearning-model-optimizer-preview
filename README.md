@@ -422,9 +422,9 @@ Currently we support setting the following OLive configs:
 
 * Scoring target configs
 
-<table style="width:100%">
+<table>
 <tr>
-<th style="width:10%"> Configuration </th> <th style="width:40%"> Definition </th> <th style="width:40%"> Example </th> <th style="width:10%"> Default Values </th>
+<th> Configuration </th> <th> Definition </th> <th> Example </th> <th> Default Values </th>
 </tr>
 <tr>
 <td> <code>subscription_id</code> </td> <td> [Optional] the subscription id of the online endpoint </td> <td> ea4faa5b-5e44-4236-91f6-5483d5b17d14 </td> <td> subscription id of the profiling job </td>
@@ -496,11 +496,13 @@ If both <code>scoring_headers</code> and endpoint info are provided, the profili
 </td>
 <td>
 
+```json
 {
   "Content-Type": "application/json",
   "Authorization": "Bearer < auth_key >",
   "azureml-model-deployment": "< deployment_name >"
 }
+```
 
 </td> <td> - </td>
 </tr>
