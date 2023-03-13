@@ -250,6 +250,26 @@ Prepare a profiling configuration json file. Below is a sample configuration fil
 }
 ```
 
+Prepare a scoring target configuration json file. You may use the `deployment_settings.json` file from the deployer job outputs. Below is a sample configuration file. For detailed info about scoring target configurations, please refer to [Scoring target configuration](#scoring-target-configs)
+
+```json
+{
+  "version": "1.0",
+  "deployment_settings": {
+    "subscription_id": "636d700c-4412-48fa-84be-452ac03d34a1",
+    "resource_group": "model-profiler",
+    "workspace_name": "profilervalidation",
+    "endpoint_name": "distilbert-endpt",
+    "deployment_name": "distilbert-dep",
+    "sku": "Standard_F8s_v2",
+    "location": "eastus",
+    "instance_count": 1,
+    "worker_count": 1,
+    "max_concurrent_requests_per_instance": 1
+  }
+}
+```
+
 Below is a sample yaml file that defines a wrk profiling job. For detailed info regarding how to construct a command job yaml file, see [Aml Job Yaml Schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command)
 
 ```yaml
@@ -420,7 +440,7 @@ Currently we support setting the following OLive configs:
 
 ### Aml profiler configuration
 
-* Scoring target configs
+#### Scoring target configs
 
 <table>
 <tr>
@@ -563,6 +583,54 @@ If concurrency is not provided specifically by the user, and the user did not pr
 Basic logic for setting the default traffic concurrency: if <code>max_concurrent_requests_per_instance</code> is provided, then the default concurrency would be the same as <code>max_concurrent_requests_per_instance</code>; if <code>max_concurrent_requests_per_instance</code> is not provided, while <code>worker_count</code> is provided, the default concurrency would be the same as <code>worker_count</code>; if neither is provided, the default concurrency would be 1.
 
 </td> <td> 1 </td> <td> - </td>
+</tr>
+</table>
+
+#### Aml wrk profiler configs
+
+<table>
+<tr>
+<th> Configuration </th> <th> Definition </th> <th> Example </th> <th> Default Values </th>
+</tr>
+<tr>
+<td> <code>duration_sec</code> </td> <td> [Optional] duration in seconds for running the profiler </td> <td> 600 </td> <td> 300 </td>
+</tr>
+<tr>
+<td> <code>connections</code> </td>
+<td>
+
+[Optional] no. of connections for the profiler
+
+The default value will be set to the value of max_concurrent_requests_per_instance
+
+The value is [Required] if the online-endpoint/online-deployment info is not provided, otherwise an error will be thrown
+
+</td> <td> 10 </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>threads</code> </td> <td> [Optional] no. of threads allocated for the profiler </td> <td> 3 </td> <td> 1 </td>
+</tr>
+<tr>
+<td> <code>payload</code> </td>
+<td>
+
+[Optional] users may use this param to provide a single string format payload data for invoking the scoring target.
+
+If inputs.payload is provided in the profiler_job.yml file, this env var will be ignored.
+
+</td>
+<td>
+
+```json
+{
+  "data": [
+    [1,2,3,4,5,6,7,8,9,10], 
+    [10,9,8,7,6,5,4,3,2,1]
+  ]
+}
+```
+
+</td> <td> - </td>
 </tr>
 </table>
 
