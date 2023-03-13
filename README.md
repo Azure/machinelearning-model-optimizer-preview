@@ -52,7 +52,7 @@ You will need a compute to host the optimizer, run the optimization program and 
 
 #### Create an optimization job
 
-Prepare an optimization configuration json file. Below is a sample configuration file. For detailed configuration definitions, please refer to [Job yaml syntax and configuration definitions](#Job yaml syntax and configuration definitions).
+Prepare an optimization configuration json file. Below is a sample configuration file. For detailed configuration definitions, please refer to [OLive Optimizer Configuration](#olive-optimizer-configuration).
 
 ```json
 {
@@ -415,6 +415,173 @@ Currently we support setting the following OLive configs:
 </tr>
 <tr>
 <td> <code>test_num</code> </td> <td> [Optional] repeat test times for latency measurement </td> <td> 200 </td> <td> 20 </td>
+</tr>
+</table>
+
+### Aml profiler configuration
+
+* Scoring target configs
+<table>
+<tr>
+<td> Configuration </td> <td> Definition </td> <td> Example </td> <td> Default Values </td>
+</tr>
+<tr>
+<td> <code>subscription_id</code> </td> <td> [Optional] the subscription id of the online endpoint </td> <td> ea4faa5b-5e44-4236-91f6-5483d5b17d14 </td> <td> subscription id of the profiling job </td>
+</tr>
+<tr>
+<td> <code>resource_group</code> </td> <td> [Optional] the resource group of the online endpoint </td> <td> my-rg </td> <td> resource group of the profiling job </td>
+</tr>
+<tr>
+<td> <code>workspace_name</code> </td> <td> [Optional] the workspace name of the online endpoint </td> <td> my-ws </td> <td> workspace of the profiling job </td>
+</tr>
+<tr>
+<td> <code>endpoint_name</code> </td> 
+<td> 
+
+```text
+[Optional] the name of the online endpoint
+
+Required, if users want to get resource usage metrics in the profiling reports, such as CpuUtilizationPercentage, CpuMemoryUtilizationPercentage, etc.
+
+If <code>scoring_uri</code> is not provided, the system will try to get the scoring_uri from the endpoint info provided by the user, including <code>subscription_id</code>, <code>resource_group</code>, <code>workspace_name</code> and <code>endpoint_name</code>
+```
+
+</td> <td> my-endpoint </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>deployment_name</code> </td> 
+<td> 
+
+```text
+[Optional] the name of the online deployment
+
+Required, if users want to get resource usage metrics in the profiling reports, such as CpuUtilizationPercentage, CpuMemoryUtilizationPercentage, etc.
+
+If <code>scoring_uri</code> is not provided, the system will try to get the scoring_uri from the endpoint info provided by the user, including <code>subscription_id</code>, <code>resource_group</code>, <code>workspace_name</code> and <code>endpoint_name</code>
+```
+
+</td> <td> my-deployment </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>identity_access_token</code> </td> 
+<td> 
+
+```text
+[Optional] an optional aad token for retrieving endpoint scoring_uri, access_key, and resource usage metrics. This will not be necessary for the following scenario:
+
+- The aml compute that is used to run the profiling job has contributor access to the workspace of the online endpoint.
+
+It's recommended to assign appropriate permissions to the aml compute rather than providing this aad token, since the aad token might be expired during the profiling job
+```
+
+</td> <td> - </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>scoring_uri</code> </td>
+<td> 
+
+```text
+[Optional] users are optional to provide this env var as instead of the <code>subscription_id</code> / <code>resource_group</code> / <code>workspace_name</code> / <code>endpoint_name</code> / <code>deployment_name</code> combination to define the profiling target. 
+
+If <code>scoring_uri</code> is not provided, the system will try to get the scoring_uri from the endpoint info provided by the user, including subscription_id, resource_group, workspace_name and endpoint_name
+
+If both <code>scoring_uri</code> and endpoint info are provided, the profiling tool will honor the value of the <code>scoring_uri</code>.
+```
+
+</td> <td> https://my-inference-service-uri.com </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>scoring_headers</code> </td>
+<td>
+
+```text
+[Optional] users may use this env var to provide any headers necessary when invoking the profiling target. One Required field inside the scoring_headers dict is “Authorization”.
+
+If <code>scoring_headers</code> is not provided, the system will try to get the scoring_headers from the endpoint info provided by the user, including <code>subscription_id</code>, <code>resource_group</code>, <code>workspace_name</code>, <code>endpoint_name</code> and <code>deployment_name</code>.
+
+If both <code>scoring_headers</code> and endpoint info are provided, the profiling tool will honor the value of the <code>scoring_headers</code>
+```
+
+</td>
+<td>
+
+```json
+{
+  "Content-Type": "application/json",
+  "Authorization": "Bearer < inference_service_auth_key >",
+  "azureml-model-deployment": < deployment_name >"
+}
+```
+
+</td> <td> - </td>
+</tr>
+<tr>
+<td> <code>sku</code> </td>
+<td>
+
+```text
+[Optional] used together with <code>location</code> and <code>instance_count</code> for calculating <code>core_hour_per_million_requests</code>. Missing either one of the 3 values will result in failure when calculating <code>core_hour_per_million_requests</code>.
+
+If <code>sku</code> is not provided, the system will try to get the sku from the endpoint info provided by the user, including <code>subscription_id</code>, <code>resource_group</code>, <code>workspace_name</code>, <code>endpoint_name</code> and <code>deployment_name</code>.
+```
+
+</td> <td> Standard_F2s_v2 </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>location</code> </td>
+<td> 
+
+```text
+[Optional] used together with <code>sku</code> and <code>instance_count</code> for calculating <code>core_hour_per_million_requests</code>. Missing either one of the 3 values will result in failure when calculating <code>core_hour_per_million_requests</code>.
+
+If <code>location</code> is not provided, the system will try to get the location from the endpoint info provided by the user, including <code>subscription_id</code>, <code>resource_group</code>, <code>workspace_name</code>, <code>endpoint_name</code> and <code>deployment_name</code>.
+```
+
+</td> <td> eastus2 </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>instance_count</code> </td>
+<td> 
+
+```text
+[Optional] used together with <code>sku</code> and <code>instance_count</code> for calculating <code>core_hour_per_million_requests</code>. Missing either one of the 3 values will result in failure when calculating <code>core_hour_per_million_requests</code>.
+
+If <code>instance_count</code> is not provided, the system will try to get the instance_count from the endpoint info provided by the user, including <code>subscription_id</code>, <code>resource_group</code>, <code>workspace_name</code>, <code>endpoint_name</code> and <code>deployment_name</code>.
+```
+
+</td> <td> 1 </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>worker_count</code> </td>
+<td> 
+
+```text
+[Optional] the profiling tool would set the default traffic concurrency basing on <code>worker_count</code> and <code>max_concurrent_requests_per_instance</code>.
+
+If users choose to provide the concurrency setting specifically in the profiling_config.json file, then neither <code>worker_count</code> nor <code>max_concurrent_requests_per_instance</code> is necessary.
+
+If concurrency is not provided specifically by the user, and the user did not provide <code>worker_count</code> or <code>max_concurrent_requests_per_instance</code>, the system would try to get the <code>worker_count</code> and <code>max_concurrent_requests_per_instance</code> info from the endpoint info provided by the user, including <code>subscription_id</code>, <code>resource_group</code>, <code>workspace_name</code>, <code>endpoint_name</code> and <code>deployment_name</code>.
+
+Basic logic for setting the default traffic concurrency: if <code>max_concurrent_requests_per_instance</code> is provided, then the default concurrency would be the same as <code>max_concurrent_requests_per_instance</code>; if <code>max_concurrent_requests_per_instance</code> is not provided, while <code>worker_count</code> is provided, the default concurrency would be the same as <code>worker_count</code>; if neither is provided, the default concurrency would be 1.
+```
+
+</td> <td> 1 </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>max_concurrent_requests_per_instance</code> </td> 
+<td> 
+
+```text
+[Optional] the profiling tool would set the default traffic concurrency basing on <code>worker_count</code> and <code>max_concurrent_requests_per_instance</code>.
+
+If users choose to provide the concurrency setting specifically in the profiling_config.json file, then neither <code>worker_count</code> nor <code>max_concurrent_requests_per_instance</code> is necessary.
+
+If concurrency is not provided specifically by the user, and the user did not provide <code>worker_count</code> or <code>max_concurrent_requests_per_instance</code>, the system would try to get the <code>worker_count</code> and <code>max_concurrent_requests_per_instance</code> info from the endpoint info provided by the user, including <code>subscription_id</code>, <code>resource_group</code>, <code>workspace_name</code>, <code>endpoint_name</code> and <code>deployment_name</code>.
+
+Basic logic for setting the default traffic concurrency: if <code>max_concurrent_requests_per_instance</code> is provided, then the default concurrency would be the same as <code>max_concurrent_requests_per_instance</code>; if <code>max_concurrent_requests_per_instance</code> is not provided, while <code>worker_count</code> is provided, the default concurrency would be the same as <code>worker_count</code>; if neither is provided, the default concurrency would be 1.
+```
+
+</td> <td> 1 </td> <td> - </td>
 </tr>
 </table>
 
