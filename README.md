@@ -421,7 +421,7 @@ Currently we support setting the following OLive configs:
 ### Aml profiler configuration
 
 * Scoring target configs
-<table width="300">
+<table>
 <tr>
 <td> Configuration </td> <td> Definition </td> <td> Example </td> <td> Default Values </td>
 </tr>
@@ -435,11 +435,14 @@ Currently we support setting the following OLive configs:
 <td> <code>workspace_name</code> </td> <td> [Optional] the workspace name of the online endpoint </td> <td> my-ws </td> <td> workspace of the profiling job </td>
 </tr>
 <tr>
-<td> <code>endpoint_name</code> </td> 
-<td> 
+<td> <code>endpoint_name</code> </td>
+<td>
+
 [Optional] the name of the online endpoint
 Required, if users want to get resource usage metrics in the profiling reports, such as CpuUtilizationPercentage, CpuMemoryUtilizationPercentage, etc.
+
 If <code>scoring_uri</code> is not provided, the system will try to get the scoring_uri from the endpoint info provided by the user, including <code>subscription_id</code>, <code>resource_group</code>, <code>workspace_name</code> and <code>endpoint_name</code>
+
 </td> <td> my-endpoint </td> <td> - </td>
 </tr>
 <tr>
