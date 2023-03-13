@@ -358,11 +358,11 @@ The deleter job won't generate any output files, but you may also use the below 
 Currently we support setting the following OLive configs:
 <table>
 <tr>
-<td> Configuration </td> <td> Definition </td> <td> Example </td> <td> Default Values </td>
+<th> Configuration </th> <th> Definition </th> <th> Example </th> <th> Default Values </th>
 </tr>
 <tr>
-<td> <code>inputs_spec</code> </td> <td> [Optional] dictionary of input’s names and shapes </td> 
-<td> 
+<td> <code>inputs_spec</code> </td> <td> [Optional] dictionary of input’s names and shapes </td>
+<td>
 
 ```json
 {
@@ -421,7 +421,7 @@ Currently we support setting the following OLive configs:
 ### Aml profiler configuration
 
 * Scoring target configs
-<table>
+<table style="width:100%">
 <tr>
 <th style="width:10%"> Configuration </th> <th style="width:50%"> Definition </th> <th style="width:20%"> Example </th> <th style="width:20%"> Default Values </th>
 </tr>
