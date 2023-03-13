@@ -363,6 +363,7 @@ Currently we support setting the following OLive configs:
 <tr>
 <td> <code>inputs_spec</code> </td> <td> [Optional] dictionary of input’s names and shapes </td> 
 <td> 
+
 ```json
 {
   "attention_mask": [1, 7],
@@ -370,6 +371,7 @@ Currently we support setting the following OLive configs:
   "token_type_ids": [1, 7]
 }
 ```
+
 </td> <td> - </td>
 </tr>
 <tr>
