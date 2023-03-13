@@ -1,0 +1,17 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+command:
+  python -m aml_online_endpoints_deleter --config_path ${{inputs.config}} --delete_endpoint ${{inputs.delete_endpoint}}
+experiment_name: deletion-demo-job
+environment:
+  image: mcr.microsoft.com/azureml/aml-online-endpoints-deleter:20230306.1
+name: $DELETER_JOB_NAME
+tags:
+  action: delete
+  endpoint: $ENDPOINT_NAME
+  deployment: $DEPLOYMENT_NAME
+compute: azureml:deploymentTest
+inputs:
+  config:
+    type: uri_file
+    path: deployment_settings.json
+  delete_endpoint: True

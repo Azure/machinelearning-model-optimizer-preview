@@ -1,0 +1,17 @@
+name: model-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.9.2
+  - pip=21.2.4
+  - pip:
+    - --extra-index-url https://olivewheels.azureedge.net/oaas
+    - azureml-defaults==1.38.0
+    - six==1.16.0
+    - tensorflow==2.10.0
+    - transformers==4.26.0
+    # - onnxruntime==1.10.0
+    - onnxruntime-openvino-dnnl==1.10.0
+    - numpy==1.23.4
+
+ 

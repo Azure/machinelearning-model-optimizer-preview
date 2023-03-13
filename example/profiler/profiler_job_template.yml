@@ -1,0 +1,20 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+command: >
+  python -m aml_wrk_profiler --config_path ${{inputs.config}} --scoring_target_path ${{inputs.scoring_target}} --payload_path ${{inputs.payload}}
+experiment_name: profiling-demo-jobs
+name: $PROFILER_JOB_NAME
+environment:
+  image: mcr.microsoft.com/azureml/aml-wrk-profiler:20230303.2
+tags: 
+  deployment: $DEPLOYMENT_NAME
+compute: azureml:$PROFILER_COMPUTE_NAME
+inputs:
+  config:
+    type: uri_file
+    path: config.json
+  scoring_target:
+    type: uri_file
+    path: deployment_settings.json
+  payload:
+    type: uri_file
+    path: ../distilbert_model/inputs.jsonl

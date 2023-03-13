@@ -1,0 +1,7 @@
+{
+    "version": 1.0,
+    "profiler_config": {
+        "duration_sec": 300,
+        "connections": 1
+    }
+}

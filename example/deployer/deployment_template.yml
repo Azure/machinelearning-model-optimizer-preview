@@ -1,0 +1,15 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
+name: $DEPLOYMENT_NAME
+endpoint_name: $ENDPOINT_NAME
+model:
+  name: distilbert-optimized
+  version: 1
+  path: <% MODEL_FOLDER_PATH %>
+code_configuration:
+  code: <% CODE_FOLDER_PATH %>
+  scoring_script: score.py
+environment: 
+  conda_file: <% ENVIRONMENT_FOLDER_PATH %>/conda.yml
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest
+instance_type: $INFERENCE_SERVICE_COMPUTE_SIZE
+instance_count: 1
