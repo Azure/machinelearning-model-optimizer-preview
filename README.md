@@ -496,13 +496,11 @@ If both <code>scoring_headers</code> and endpoint info are provided, the profili
 </td>
 <td>
 
-```json
 {
   "Content-Type": "application/json",
   "Authorization": "Bearer < auth_key >",
   "azureml-model-deployment": "< deployment_name >"
 }
-```
 
 </td> <td> - </td>
 </tr>
