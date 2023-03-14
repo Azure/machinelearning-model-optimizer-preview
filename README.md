@@ -238,7 +238,7 @@ You may download the deployment_settings.json file with the following command, t
 
 #### Create a profiling job
 
-Prepare a profiling configuration json file. Below is a sample configuration file.
+Prepare a profiling configuration json file. Below is a sample configuration file. For detailed info about profiler job configs, see [AzureML Wrk Profiler Configs](#azureml-wrk-profiler-configs), [AzureML Wrk2 Profiler Configs](#azureml-wrk2-profiler-configs) and [AzureML Labench Profiler Configs](#azureml-labench-profiler-configs)
 
 ```json
 {
