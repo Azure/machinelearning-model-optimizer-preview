@@ -1,0 +1,30 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+command:
+  python -m aml_online_endpoints_deployer --endpoint_yaml_path ${{inputs.endpoint}} --deployment_yaml_path ${{inputs.deployment}} --model_folder_path ${{inputs.model}} --environment_folder_path ${{inputs.environment}} --code_folder_path ${{inputs.code}} --optimized_parameters_path ${{inputs.optimized_parameters}}
+experiment_name: deployment-demo-jobs
+environment:
+  image: mcr.microsoft.com/azureml/aml-online-endpoints-deployer:20230306.1
+name: $DEPLOYER_JOB_NAME
+tags:
+  endpoint: $ENDPOINT_NAME
+  deployment: $DEPLOYMENT_NAME
+compute: azureml:$DEPLOYER_COMPUTE_NAME
+inputs:
+  endpoint:
+    type: uri_file
+    path: endpoint.yml
+  deployment: 
+    type: uri_file
+    path: deployment.yml
+  model: 
+    type: uri_folder
+    path: ../distilbert_model/optimized_model
+  environment: 
+    type: uri_folder
+    path: ../distilbert_model/environment
+  code:
+    type: uri_folder    
+    path: ../distilbert_model/code
+  optimized_parameters:
+    type: uri_file
+    path: optimized_parameters.json
