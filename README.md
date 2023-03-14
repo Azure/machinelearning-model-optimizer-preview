@@ -1,10 +1,10 @@
-# AML Optimization and Profiling Recipe
+# AzureML Optimizer and Profiler
 
 ## Overview
 
 The process of accelerating models, deploying models to a competent platform and tuning deployment parameters to make the best use of compute resources and reduce cost to reach the desired performance SLA (e.g. latency, throughput) is not only necessary but also vital for the production of machine learning services. This recipe is aiming at providing a one-stop experience for users to execute the complete process from optimization to profiling on azureml.
 
-AML Optimization and Profiling (Preview) provides fully managed experience that makes it easy to benchmark your model performance.
+AzureML Optimizer and Profiler (Preview) provides fully managed experience that makes it easy to benchmark your model performance.
 
 * Use the benchmarking tool of your choice.
 
@@ -14,21 +14,21 @@ AML Optimization and Profiling (Preview) provides fully managed experience that 
   
 * Thorough performance report containing latency percentiles and resource utilization metrics.
 
-## A brief introduction on the aml optimization and profiling tools
+## A brief introduction on the AzureML Optimizer and Profiler
 
-The aml optimization and profiling recipe is currently consisted of the following 5 tools:
+The azureml optimizer and profiler is currently consisted of the following 5 tools:
 
-* `aml-olive-optimizer`: An optimizer based on "OLive". "OLive" (for ONNX Runtime(ORT) Go Live) is a python package that automates the process of accelerating models with ONNX Runtime(ORT). For detailed info please refer to this [link](https://github.com/microsoft/OLive).
+* `azureml-olive-optimizer`: An optimizer based on "OLive". "OLive" (for ONNX Runtime(ORT) Go Live) is a python package that automates the process of accelerating models with ONNX Runtime(ORT). For detailed info please refer to this [link](https://github.com/microsoft/OLive).
 
-* `aml-wrk-profiler`: A profiler based on "wrk". "wrk" is a modern HTTP benchmarking tool capable of generating significant load when run on a single multi-core CPU. It combines a multithreaded design with scalable event notification systems such as epoll and kqueue. For detailed info please refer to this [link]( https://github.com/wg/wrk).
+* `azureml-wrk-profiler`: A profiler based on "wrk". "wrk" is a modern HTTP benchmarking tool capable of generating significant load when run on a single multi-core CPU. It combines a multithreaded design with scalable event notification systems such as epoll and kqueue. For detailed info please refer to this [link]( https://github.com/wg/wrk).
 
-* `aml-wrk2-profiler`: A profiler based on "wrk2". "wrk2" is "wrk" modified to produce a constant throughput load, and accurate latency details to the high 9s (i.e. can produce accuracy 99.9999% if run long enough). In addition to wrk's arguments, wrk2 takes a throughput argument (in total requests per second) via either the --rate or -R parameters (default is 1000). For detailed info please refer to this [link](https://github.com/giltene/wrk2).
+* `azureml-wrk2-profiler`: A profiler based on "wrk2". "wrk2" is "wrk" modified to produce a constant throughput load, and accurate latency details to the high 9s (i.e. can produce accuracy 99.9999% if run long enough). In addition to wrk's arguments, wrk2 takes a throughput argument (in total requests per second) via either the --rate or -R parameters (default is 1000). For detailed info please refer to this [link](https://github.com/giltene/wrk2).
 
-* `aml-labench-profiler`: A profiler based on "LaBench". "LaBench" (for LAtency BENCHmark) is a tool that measures latency percentiles of HTTP GET or POST requests under very even and steady load. For detailed info please refer to this [link](https://github.com/microsoft/LaBench).
+* `azureml-labench-profiler`: A profiler based on "LaBench". "LaBench" (for LAtency BENCHmark) is a tool that measures latency percentiles of HTTP GET or POST requests under very even and steady load. For detailed info please refer to this [link](https://github.com/microsoft/LaBench).
 
-* `aml-online-endpoints-deployer`: A deployer that deploys models as aml online-endpoints. The deployer uses `az cli` and `ml` extension for the deployment job. For detailed info regarding using `az cli` for deploying online-endpoints, please refer to this [link](https://learn.microsoft.com/en-us/cli/azure/ml/online-endpoint?view=azure-cli-latest#az-ml-online-endpoint-create).
+* `azureml-online-endpoints-deployer`: A deployer that deploys models as azureml online-endpoints. The deployer uses `az cli` and `ml` extension for the deployment job. For detailed info regarding using `az cli` for deploying online-endpoints, please refer to this [link](https://learn.microsoft.com/en-us/cli/azure/ml/online-endpoint?view=azure-cli-latest#az-ml-online-endpoint-create).
   
-* `aml-online-endpoints-deleter`: A deleter that deletes aml online-endpoints and online-deployments. The deleter also uses `az cli` and `ml` extension for the deletion job. For detailed info regarding using `az cli` for deleting online-endpoints, please refer to this [link](https://learn.microsoft.com/en-us/cli/azure/ml/online-endpoint?view=azure-cli-latest#az-ml-online-endpoint-delete).
+* `azureml-online-endpoints-deleter`: A deleter that deletes azureml online-endpoints and online-deployments. The deleter also uses `az cli` and `ml` extension for the deletion job. For detailed info regarding using `az cli` for deleting online-endpoints, please refer to this [link](https://learn.microsoft.com/en-us/cli/azure/ml/online-endpoint?view=azure-cli-latest#az-ml-online-endpoint-delete).
   
 ## Prerequisites
 
@@ -38,7 +38,7 @@ The aml optimization and profiling recipe is currently consisted of the followin
 
 ## Get started
 
-Please follow this [example](example/aml_optimization_and_profiling.ipynb) and get started with the aml optimization and profiling experience.
+Please follow this [example](example/azureml_optimization_and_profiling.ipynb) and get started with the azureml optimizer and profiler experience.
 
 ### Step 1: Optimize your model
 
@@ -71,13 +71,13 @@ Prepare an optimization configuration json file. Below is a sample configuration
 }
 ```
 
-Below is a template yaml file that defines an olive optimization job. For detailed info regarding how to construct a command job yaml file, see [Aml Job Yaml Schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command)
+Below is a template yaml file that defines an olive optimization job. For detailed info regarding how to construct a command job yaml file, see [AzureML Job Yaml Schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command)
 
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 command: >
   python -m aml_olive_optimizer --config_path ${{inputs.config}} --model_path ${{inputs.model}}
-experiment_name: demo-optimization-job
+experiment_name: optimization-demo-job
 name: $OPTIMIZER_JOB_NAME
 tags: 
   optimizationTool: olive
@@ -135,7 +135,7 @@ You may download the optimized_parameters.json file and optimized_model.onnx fil
 
 #### Create an online-endpoints deployer job
 
-Prepare an online-endpoint configuration yaml file. Below is a sample configuration file. For detailed info regarding how to construct an online-endpoint yaml file, see [Aml Online-Endpoint Yaml Schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-endpoint-online).
+Prepare an online-endpoint configuration yaml file. Below is a sample configuration file. For detailed info regarding how to construct an online-endpoint yaml file, see [AzureML Online-Endpoint Yaml Schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-endpoint-online).
 
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/managedOnlineEndpoint.schema.json
@@ -143,7 +143,7 @@ name: $ENDPOINT_NAME
 auth_mode: key
 ```
 
-Prepare an online-deployment configuration yaml file. Below is a sample configuration file. For detailed info regarding how to construct an online-deployment yaml file, see [Aml Online-Deployment Yaml Schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-deployment-managed-online).
+Prepare an online-deployment configuration yaml file. Below is a sample configuration file. For detailed info regarding how to construct an online-deployment yaml file, see [AzureML Online-Deployment Yaml Schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-deployment-managed-online).
 
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
@@ -163,7 +163,7 @@ instance_type: $INFERENCE_SERVICE_COMPUTE_SIZE
 instance_count: 1
 ```
 
-Below is a sample yaml file that defines an online-endpoints deployer job. For detailed info regarding how to construct a command job yaml file, see [Aml Job Yaml Schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command)
+Below is a sample yaml file that defines an online-endpoints deployer job. For detailed info regarding how to construct a command job yaml file, see [AzureML Job Yaml Schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command)
 
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
@@ -270,7 +270,7 @@ Prepare a scoring target configuration json file. You may use the `deployment_se
 }
 ```
 
-Below is a sample yaml file that defines a wrk profiling job. For detailed info regarding how to construct a command job yaml file, see [Aml Job Yaml Schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command)
+Below is a sample yaml file that defines a wrk profiling job. For detailed info regarding how to construct a command job yaml file, see [AzureML Job Yaml Schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command)
 
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
@@ -335,7 +335,7 @@ You may download the report.json file with the following command.
 
 #### Create an online-endpoints deleter job
 
-Below is a sample yaml file that defines an online-endpoints deleter job. For detailed info regarding how to construct a command job yaml file, see [Aml Job Yaml Schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command)
+Below is a sample yaml file that defines an online-endpoints deleter job. For detailed info regarding how to construct a command job yaml file, see [AzureML Job Yaml Schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command)
 
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
@@ -438,7 +438,7 @@ Currently we support setting the following OLive configs:
 </tr>
 </table>
 
-### Aml profiler configuration
+### AzureML profiler configuration
 
 #### Scoring target configs
 
@@ -480,8 +480,8 @@ If <code>scoring_uri</code> is not provided, the system will try to get the scor
 </td> <td> my-deployment </td> <td> - </td>
 </tr>
 <tr>
-<td> <code>identity_access_token</code> </td> 
-<td> 
+<td> <code>identity_access_token</code> </td>
+<td>
 
 [Optional] an optional aad token for retrieving endpoint scoring_uri, access_key, and resource usage metrics. This will not be necessary for the following scenario:
 
@@ -586,7 +586,7 @@ Basic logic for setting the default traffic concurrency: if <code>max_concurrent
 </tr>
 </table>
 
-#### Aml wrk profiler configs
+#### AzureML wrk profiler configs
 
 <table>
 <tr>
