@@ -618,19 +618,83 @@ The value is [Required] if the online-endpoint/online-deployment info is not pro
 
 If inputs.payload is provided in the profiler_job.yml file, this env var will be ignored.
 
-</td>
+</td> <td> '{"data": [[1,2,3,4,5,6,7,8,9,10], [10,9,8,7,6,5,4,3,2,1]]}' </td> <td> - </td>
+</tr>
+</table>
+
+#### AzureML wrk2 profiler configs
+
+<table>
+<tr>
+<th> Configuration </th> <th> Definition </th> <th> Example </th> <th> Default Values </th>
+</tr>
+<tr>
+<td> <code>duration_sec</code> </td> <td> [Optional] duration in seconds for running the profiler </td> <td> 600 </td> <td> 300 </td>
+</tr>
+<tr>
+<td> <code>connections</code> </td>
 <td>
 
-```json
-{
-  "data": [
-    [1,2,3,4,5,6,7,8,9,10], 
-    [10,9,8,7,6,5,4,3,2,1]
-  ]
-}
-```
+[Optional] no. of connections for the profiler
 
-</td> <td> - </td>
+The default value will be set to the value of max_concurrent_requests_per_instance
+
+The value is [Required] if the online-endpoint/online-deployment info is not provided, otherwise an error will be thrown
+
+</td> <td> 10 </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>threads</code> </td> <td> [Optional] no. of threads allocated for the profiler </td> <td> 3 </td> <td> 1 </td>
+</tr>
+<tr>
+<td> <code>payload</code> </td>
+<td>
+
+[Optional] users may use this param to provide a single string format payload data for invoking the scoring target.
+
+If inputs.payload is provided in the profiler_job.yml file, this env var will be ignored.
+
+</td> <td> '{"data": [[1,2,3,4,5,6,7,8,9,10], [10,9,8,7,6,5,4,3,2,1]]}' </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>target_rps</code> </td> <td> [Optional] target requests per second for the profiler </td> <td> 100 </td> <td> 50 </td>
+</tr>
+</table>
+
+#### AzureML labench profiler configs
+
+<table>
+<tr>
+<th> Configuration </th> <th> Definition </th> <th> Example </th> <th> Default Values </th>
+</tr>
+<tr>
+<td> <code>duration_sec</code> </td> <td> [Optional] duration in seconds for running the profiler </td> <td> 600 </td> <td> 300 </td>
+</tr>
+<tr>
+<td> <code>clients</code> </td>
+<td>
+
+[Optional] no. of clients for the profiler.
+
+The default value will be set to the value of max_concurrent_requests_per_instance
+
+</td> <td> 10 </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>timeout_sec</code> </td> <td> [Optional] timeout in seconds for each request </td> <td> 20 </td> <td> 10 </td>
+</tr>
+<tr>
+<td> <code>payload</code> </td>
+<td>
+
+[Optional] users may use this param to provide a single string format payload data for invoking the scoring target.
+
+If inputs.payload is provided in the profiler_job.yml file, this env var will be ignored.
+
+</td><td> '{"data": [[1,2,3,4,5,6,7,8,9,10], [10,9,8,7,6,5,4,3,2,1]]}' </td> <td> - </td>
+</tr>
+<tr>
+<td> <code>target_rps</code> </td> <td> [Optional] target requests per second for the profiler </td> <td> 100 </td> <td> 50 </td>
 </tr>
 </table>
 
