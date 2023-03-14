@@ -18,17 +18,17 @@ AzureML Optimizer and Profiler (Preview) provides fully managed experience that 
 
 The azureml optimizer and profiler is currently consisted of the following 5 tools:
 
-* `azureml-olive-optimizer`: An optimizer based on "OLive". "OLive" (for ONNX Runtime(ORT) Go Live) is a python package that automates the process of accelerating models with ONNX Runtime(ORT). For detailed info please refer to this [link](https://github.com/microsoft/OLive).
+* `aml-olive-optimizer`: An optimizer based on "OLive". "OLive" (for ONNX Runtime(ORT) Go Live) is a python package that automates the process of accelerating models with ONNX Runtime(ORT). For detailed info please refer to this [link](https://github.com/microsoft/OLive).
 
-* `azureml-wrk-profiler`: A profiler based on "wrk". "wrk" is a modern HTTP benchmarking tool capable of generating significant load when run on a single multi-core CPU. It combines a multithreaded design with scalable event notification systems such as epoll and kqueue. For detailed info please refer to this [link]( https://github.com/wg/wrk).
+* `aml-wrk-profiler`: A profiler based on "wrk". "wrk" is a modern HTTP benchmarking tool capable of generating significant load when run on a single multi-core CPU. It combines a multithreaded design with scalable event notification systems such as epoll and kqueue. For detailed info please refer to this [link]( https://github.com/wg/wrk).
 
-* `azureml-wrk2-profiler`: A profiler based on "wrk2". "wrk2" is "wrk" modified to produce a constant throughput load, and accurate latency details to the high 9s (i.e. can produce accuracy 99.9999% if run long enough). In addition to wrk's arguments, wrk2 takes a throughput argument (in total requests per second) via either the --rate or -R parameters (default is 1000). For detailed info please refer to this [link](https://github.com/giltene/wrk2).
+* `aml-wrk2-profiler`: A profiler based on "wrk2". "wrk2" is "wrk" modified to produce a constant throughput load, and accurate latency details to the high 9s (i.e. can produce accuracy 99.9999% if run long enough). In addition to wrk's arguments, wrk2 takes a throughput argument (in total requests per second) via either the --rate or -R parameters (default is 1000). For detailed info please refer to this [link](https://github.com/giltene/wrk2).
 
-* `azureml-labench-profiler`: A profiler based on "LaBench". "LaBench" (for LAtency BENCHmark) is a tool that measures latency percentiles of HTTP GET or POST requests under very even and steady load. For detailed info please refer to this [link](https://github.com/microsoft/LaBench).
+* `aml-labench-profiler`: A profiler based on "LaBench". "LaBench" (for LAtency BENCHmark) is a tool that measures latency percentiles of HTTP GET or POST requests under very even and steady load. For detailed info please refer to this [link](https://github.com/microsoft/LaBench).
 
-* `azureml-online-endpoints-deployer`: A deployer that deploys models as azureml online-endpoints. The deployer uses `az cli` and `ml` extension for the deployment job. For detailed info regarding using `az cli` for deploying online-endpoints, please refer to this [link](https://learn.microsoft.com/en-us/cli/azure/ml/online-endpoint?view=azure-cli-latest#az-ml-online-endpoint-create).
+* `aml-online-endpoints-deployer`: A deployer that deploys models as azureml online-endpoints. The deployer uses `az cli` and `ml` extension for the deployment job. For detailed info regarding using `az cli` for deploying online-endpoints, please refer to this [link](https://learn.microsoft.com/en-us/cli/azure/ml/online-endpoint?view=azure-cli-latest#az-ml-online-endpoint-create).
   
-* `azureml-online-endpoints-deleter`: A deleter that deletes azureml online-endpoints and online-deployments. The deleter also uses `az cli` and `ml` extension for the deletion job. For detailed info regarding using `az cli` for deleting online-endpoints, please refer to this [link](https://learn.microsoft.com/en-us/cli/azure/ml/online-endpoint?view=azure-cli-latest#az-ml-online-endpoint-delete).
+* `aml-online-endpoints-deleter`: A deleter that deletes azureml online-endpoints and online-deployments. The deleter also uses `az cli` and `ml` extension for the deletion job. For detailed info regarding using `az cli` for deleting online-endpoints, please refer to this [link](https://learn.microsoft.com/en-us/cli/azure/ml/online-endpoint?view=azure-cli-latest#az-ml-online-endpoint-delete).
   
 ## Prerequisites
 
