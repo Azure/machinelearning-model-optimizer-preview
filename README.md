@@ -1,10 +1,10 @@
-# Azure Machine Learning Optimizer
+# Azure Machine Learning Model Optimizer
 
 ## Overview
 
 The process of accelerating models, deploying models to a competent platform and tuning deployment parameters to make the best use of compute resources and reduce cost to reach the desired performance SLA (e.g. latency, throughput) is not only necessary but also vital for the production of machine learning services. This recipe is aiming at providing a one-stop experience for users to execute the complete process from optimization to profiling on Azure Machine Learning.
 
-Azure Machine Learning Optimizer and Profiler (Preview) provides fully managed experience that makes it easy to benchmark your model performance.
+Azure Machine Learning Model Optimizer (preview) provides fully managed experience that makes it easy to benchmark your model performance.
 
 * Use the benchmarking tool of your choice.
 
@@ -14,9 +14,9 @@ Azure Machine Learning Optimizer and Profiler (Preview) provides fully managed e
   
 * Thorough performance report containing latency percentiles and resource utilization metrics.
 
-## A brief introduction on the Azure Machine Learning Optimizer and Profiler
+## A brief introduction on the Azure Machine Learning Model Optimizer
 
-The Azure Machine Learning Optimizer currently consistes of the following 5 tools:
+The Azure Machine Learning Model Optimizer currently consistes of the following 5 tools:
 
 * `aml-olive-optimizer`: An optimizer based on "OLive". "OLive" (for ONNX Runtime(ORT) Go Live) is a python package that automates the process of accelerating models with ONNX Runtime(ORT). For detailed info please refer to this [link](https://github.com/microsoft/OLive).
 
@@ -38,7 +38,7 @@ The Azure Machine Learning Optimizer currently consistes of the following 5 tool
 
 ## Get started
 
-Please follow this [example](example/azureml_optimization_and_profiling.ipynb) and get started with the Azure Machine Learning Optimizer experience.
+Please follow this [example](example/azureml_optimization_and_profiling.ipynb) and get started with the Azure Machine Learning Model Optimizer experience.
 
 ### Step 1: Optimize your model
 
