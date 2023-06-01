@@ -1,0 +1,26 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+command: >
+  python -m aml_olive_optimizer_v2
+  --config_path ${{inputs.config}}
+  --code ${{inputs.code_path}}
+  --optimized_parameters_path ${{outputs.optimized_parameters}}
+  --optimized_model_path ${{outputs.optimized_model}}
+experiment_name: optimization-demo-job
+name: $OPTIMIZER_JOB_NAME
+tags: 
+  optimizationTool: olive
+environment:
+  image: mcr.microsoft.com/azureml/aml-olive-optimizer:build-not-ready
+compute: azureml:$OPTIMIZER_COMPUTE_NAME
+inputs:
+  config:
+    type: uri_file
+    path: ../bert/bert.json
+  code_path:
+    type: uri_folder
+    path: ../bert/code
+outputs:
+  optimized_parameters:
+    type: uri_folder
+  optimized_model:
+    type: uri_folder
