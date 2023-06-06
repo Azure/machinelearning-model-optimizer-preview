@@ -164,7 +164,7 @@ Optimization job use olive configuration directy, but still have some limitation
 
   1. `search_strategy`: set `output_model_num` to 1 if config not include. If user want to have more than one best candidate models, please set `output_model_num` in advance.
        
-  2. `packaging_config`: set as default packaging config
+  2. `packaging_config`: set as default packaging config, and don's support override.
        
   ```json
    "packaging_config": {
@@ -184,7 +184,7 @@ Below is a template yaml file that defines an olive optimization job. For detail
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 command: >
-  python -m aml_olive_optimizer_v2
+  python -m aml_olive_optimizer
   --config_path ${{inputs.config}}
   --code ${{inputs.code_path}}
   --model_path ${{inputs.model}}
@@ -195,7 +195,7 @@ name: $OPTIMIZER_JOB_NAME
 tags:
   optimizationTool: olive
 environment:
-  image: mcr.microsoft.com/azureml/aml-olive-optimizer:build-not-ready
+  image: mcr.microsoft.com/azureml/aml-olive-optimizer:20230602.8_cpu
 compute: azureml:$OPTIMIZER_COMPUTE_NAME
 inputs:
   config:
@@ -220,7 +220,7 @@ outputs:
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 command: >
-  python -m aml_olive_optimizer_v2
+  python -m aml_olive_optimizer
   --config_path ${{inputs.config}}
   --code ${{inputs.code_path}}
   --optimized_parameters_path ${{outputs.optimized_parameters}}
@@ -230,7 +230,7 @@ name: $OPTIMIZER_JOB_NAME
 tags: 
   optimizationTool: olive
 environment:
-  image: mcr.microsoft.com/azureml/aml-olive-optimizer:build-not-ready
+  image: mcr.microsoft.com/azureml/aml-olive-optimizer:20230602.8_cpu
 compute: azureml:$OPTIMIZER_COMPUTE_NAME
 inputs:
   config:
@@ -254,7 +254,7 @@ You may create this olive optimizer job with the following command:
 
 #### Understand and download job output
 
-The olive optimizer job will generate below output files into job's default artifact output files `./outputs`.
+The olive optimizer job will generate below output files into job's default artifact output folder `./outputs`.
 
 * `*_footprints.json`: A dictionary of all the footprints generated during the optimization process.
 * `*_pareto_frontier_footprints.json`: A dictionary of the footprints that are on the Pareto frontier based on the metrics goal you set in config of `evaluators.metrics`.
@@ -532,68 +532,48 @@ The deleter job won't generate any output files, but you may also use the below 
 
 ### OLive optimizer configuration
 
-Currently we support setting the following OLive configs:
-<table>
-<tr>
-<th> Configuration </th> <th> Definition </th> <th> Example </th> <th> Default Values </th>
-</tr>
-<tr>
-<td> <code>inputs_spec</code> </td> <td> [Optional] dictionary of input’s names and shapes </td>
-<td>
+Currently we support most OLive configs, but still have below special settings and limitations:
 
-```json
-{
-  "attention_mask": [1, 7],
-  "input_ids": [1, 7],
-  "token_type_ids": [1, 7]
-}
-```
+* Systems Information:
 
-</td> <td> - </td>
-</tr>
-<tr>
-<td> <code>model_file_path</code> </td> <td> [Required] relative path to the model inside of the model folder </td> <td> "./model.onnx" </td> <td> - </td>
-</tr>
-<tr>
-<td> <code>output_names</code> </td> <td> [Optional] comma-separated list of names of output nodes of model </td> <td> "scores" </td> <td> - </td>
-</tr>
-<tr>
-<td> <code>providers_list</code> </td> <td> [Optional] providers used for perftuning </td> <td> ["cpu", "dnnl"] </td> <td> Available providers obtained by onnx runtime </td>
-</tr>
-<tr>
-<td> <code>trt_fp16_enabled</code> </td> <td> [Optional] whether enable fp16 mode for TensorRT </td> <td> true </td> <td> false </td>
-</tr>
-<tr>
-<td> <code>quantization_enabled</code> </td> <td> [Optional] whether enable quantization optimization or not </td> <td> true </td> <td> false </td>
-</tr>
-<tr>
-<td> <code>transformer_enabled</code> </td> <td> [Optional] whether enable transformer optimization or not </td> <td> true </td> <td> false </td>
-</tr>
-<tr>
-<td> <code>transformer_args</code> </td> <td> [Optional] onnxruntime transformer optimizer args </td> <td> "--model_type bert --num_heads 12" </td> <td> - </td>
-</tr>
-<tr>
-<td> <code>concurrency_num</code> </td> <td> [Optional] tuning process concurrency number </td> <td> 2 </td> <td> 1 </td>
-</tr>
-<tr>
-<td> <code>inter_thread_num_list</code> </td> <td> [Optional] list of inter thread number for perftuning </td> <td> [1,2,4] </td> <td> - </td>
-</tr>
-<tr>
-<td> <code>intra_thread_num_list</code> </td> <td> [Optional] list of intra thread number for perftuning </td> <td> [1,2,4] </td> <td> - </td>
-</tr>
-<tr>
-<td> <code>execution_mode_list</code> </td> <td> [Optional] list of execution mode for perftuning </td> <td> ["parallel"] </td> <td> - </td>
-</tr>
-<tr>
-<td> <code>ort_opt_level_list</code> </td> <td> [Optional] onnxruntime optimization level </td> <td> ["all"] </td> <td> ["all"] </td>
-</tr>
-<tr>
-<td> <code>warmup_num</code> </td> <td> [Optional] warmup times for latency measurement </td> <td> 20 </td> <td> 10 </td>
-</tr>
-<tr>
-<td> <code>test_num</code> </td> <td> [Optional] repeat test times for latency measurement </td> <td> 200 </td> <td> 20 </td>
-</tr>
-</table>
+  <table>
+  <tr>
+  <th> Configuration </th> <th> Definition </th> <th> Example </th> <th> Default Values </th>
+  </tr>
+  <tr>
+  <td> <code>type</code> </td> <td> The type of the system. Only support `LocalSystem` for olive optimizer, `AzureML` and `Docker` are not supported. </td> <td> "LocalSystem" </td> <td> - </td>
+  </tr>
+  </table>
+
+* Engine Information:
+
+  <table>
+  <tr>
+  <th> Configuration </th> <th> Definition </th> <th> Example </th> <th> Default Values </th>
+  </tr>
+  <tr>
+  <td> <code> packaging_config </code> </td> <td> Olive artifacts packaging configurations. If not specified, Olive will not package artifacts </td>
+  <td> DON'T SET, WILL BE OVERRIDED BY DEFAULT VALUE </td>
+  <td> 
+
+  ```json
+    "packaging_config": {
+        "type": "Zipfile",
+        "name": "OutputModels"
+    }
+  ```
+  </td>
+  </tr>
+  <tr>
+  <td> <code> output_model_num </code> </td> <td>  The number of output models from the engine based on metric priority. If user want to have more than one best candidate models, please set `output_model_num` below `search_strategy` in advance.</td> <td> 1 </td> <td> 1 </td>
+  </tr>
+  <tr>
+  <td> <code> plot_pareto_frontier </code> </td> <td> This decides whether to plot the pareto frontier of the search results. </td> <td> true </td> <td> true </td>
+  </tr>
+  <tr>
+  <td> <code> output_dir </code> </td> <td> The directory to store the output of the engine. Set to job's default artifact output files `./outputs`</td> <td> DON'T SET, WILL BE OVERRIDED BY DEFAULT VALUE </td> <td> "./outputs" </td>
+  </tr>
+  </table>
 
 ### AzureML profiler configuration
 

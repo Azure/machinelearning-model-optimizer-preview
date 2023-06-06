@@ -1,6 +1,6 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 command: >
-  python -m aml_olive_optimizer_v2
+  python -m aml_olive_optimizer
   --config_path ${{inputs.config}}
   --code ${{inputs.code_path}}
   --model_path ${{inputs.model}}
@@ -11,7 +11,7 @@ name: $OPTIMIZER_JOB_NAME
 tags: 
   optimizationTool: olive
 environment:
-  image: mcr.microsoft.com/azureml/aml-olive-optimizer:build-not-ready
+  image: mcr.microsoft.com/azureml/aml-olive-optimizer:20230602.8_cpu
 compute: azureml:$OPTIMIZER_COMPUTE_NAME
 inputs:
   config:
