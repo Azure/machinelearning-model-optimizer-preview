@@ -541,7 +541,7 @@ Currently we support most OLive configs, but still have below special settings a
   <th> Configuration </th> <th> Definition </th> <th> Example </th> <th> Default Values </th>
   </tr>
   <tr>
-  <td> <code>type</code> </td> <td> The type of the system. Only support `LocalSystem` for olive optimizer, `AzureML` and `Docker` are not supported. </td> <td> "LocalSystem" </td> <td> - </td>
+  <td> <code>type</code> </td> <td> The type of the system. Only support "LocalSystem" for olive optimizer, "AzureML" and "Docker" are not supported. </td> <td> "LocalSystem" </td> <td> - </td>
   </tr>
   </table>
 
@@ -565,13 +565,13 @@ Currently we support most OLive configs, but still have below special settings a
   </td>
   </tr>
   <tr>
-  <td> <code> output_model_num </code> </td> <td>  The number of output models from the engine based on metric priority. If user want to have more than one best candidate models, please set `output_model_num` below `search_strategy` in advance.</td> <td> 1 </td> <td> 1 </td>
+  <td> <code> output_model_num </code> </td> <td>  The number of output models from the engine based on metric priority. If user want to have more than one best candidate models, please set "output_model_num" below "search_strategy" in advance.</td> <td> 1 </td> <td> 1 </td>
   </tr>
   <tr>
   <td> <code> plot_pareto_frontier </code> </td> <td> This decides whether to plot the pareto frontier of the search results. </td> <td> true </td> <td> true </td>
   </tr>
   <tr>
-  <td> <code> output_dir </code> </td> <td> The directory to store the output of the engine. Set to job's default artifact output files `./outputs`</td> <td> DON'T SET, WILL BE OVERRIDED BY DEFAULT VALUE </td> <td> "./outputs" </td>
+  <td> <code> output_dir </code> </td> <td> The directory to store the output of the engine. Set to job's default artifact output files "./outputs" </td> <td> DON'T SET, WILL BE OVERRIDED BY DEFAULT VALUE </td> <td> "./outputs" </td>
   </tr>
   </table>
 
