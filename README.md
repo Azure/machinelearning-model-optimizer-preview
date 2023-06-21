@@ -195,7 +195,10 @@ name: $OPTIMIZER_JOB_NAME
 tags:
   optimizationTool: olive
 environment:
-  image: mcr.microsoft.com/azureml/aml-olive-optimizer:20230602.8_cpu
+  # For aceleration on CPU:
+  image: mcr.microsoft.com/azureml/aml-olive-optimizer:20230620.v1
+  # For aceleration on GPU:
+  # image: mcr.microsoft.com/azureml/aml-olive-optimizer-gpu:20230620.v1
 compute: azureml:$OPTIMIZER_COMPUTE_NAME
 inputs:
   config:
@@ -230,7 +233,10 @@ name: $OPTIMIZER_JOB_NAME
 tags: 
   optimizationTool: olive
 environment:
-  image: mcr.microsoft.com/azureml/aml-olive-optimizer:20230602.8_cpu
+  # For aceleration on CPU:
+  image: mcr.microsoft.com/azureml/aml-olive-optimizer:20230620.v1
+  # For aceleration on GPU:
+  # image: mcr.microsoft.com/azureml/aml-olive-optimizer-gpu:20230620.v1
 compute: azureml:$OPTIMIZER_COMPUTE_NAME
 inputs:
   config:
