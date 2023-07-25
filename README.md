@@ -18,7 +18,7 @@ Azure Machine Learning Model Optimizer (preview) provides fully managed experien
 
 The Azure Machine Learning Model Optimizer currently consistes of the following 5 tools:
 
-* `aml-olive-optimizer`: An optimizer based on "Olive". "Olive" (for ONNX Runtime(ORT) Go Live) is a python package that automates the process of accelerating models with ONNX Runtime(ORT). For detailed info please refer to this [link](https://github.com/microsoft/Olive).
+* `aml-olive-optimizer`: An optimizer based on "Olive". "Olive" is a hardware-aware model optimization tool that composes industry-leading techniques across model compression, optimization, and compilation.. For detailed info please refer to this link. [link](https://github.com/microsoft/Olive).
 
 * `aml-wrk-profiler`: A profiler based on "wrk". "wrk" is a modern HTTP benchmarking tool capable of generating significant load when run on a single multi-core CPU. It combines a multithreaded design with scalable event notification systems such as epoll and kqueue. For detailed info please refer to this [link]( https://github.com/wg/wrk).
 
