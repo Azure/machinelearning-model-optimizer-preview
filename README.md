@@ -18,7 +18,7 @@ Azure Machine Learning Model Optimizer (preview) provides fully managed experien
 
 The Azure Machine Learning Model Optimizer currently consistes of the following 5 tools:
 
-* `aml-olive-optimizer`: An optimizer based on "OLive". "OLive" (for ONNX Runtime(ORT) Go Live) is a python package that automates the process of accelerating models with ONNX Runtime(ORT). For detailed info please refer to this [link](https://github.com/microsoft/OLive).
+* `aml-olive-optimizer`: An optimizer based on "Olive". "Olive" is a hardware-aware model optimization tool that composes industry-leading techniques across model compression, optimization, and compilation.. For detailed info please refer to this link. [link](https://github.com/microsoft/Olive).
 
 * `aml-wrk-profiler`: A profiler based on "wrk". "wrk" is a modern HTTP benchmarking tool capable of generating significant load when run on a single multi-core CPU. It combines a multithreaded design with scalable event notification systems such as epoll and kqueue. For detailed info please refer to this [link]( https://github.com/wg/wrk).
 
@@ -52,7 +52,7 @@ You will need a compute to host the optimizer, run the optimization program and 
 
 #### Create an optimization job
 
-Prepare an optimization configuration json file. Below is a sample configuration file. For detailed configuration definitions, please refer to [OLive Optimizer Configuration](#olive-optimizer-configuration).
+Prepare an optimization configuration json file. Below is a sample configuration file. For detailed configuration definitions, please refer to [Olive Optimizer Configuration](#olive-optimizer-configuration).
 
 ```json
 {
@@ -536,7 +536,7 @@ The deleter job won't generate any output files, but you may also use the below 
 
 ## Job configuration specifications
 
-### OLive optimizer configuration
+### Olive optimizer configuration
 
 Currently we support most OLive configs, but still have below special settings and limitations:
 
