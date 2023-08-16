@@ -289,15 +289,15 @@ We also onboard olive components and user can use these components easily.
 User can use this pre-defined and published components via UX and the input settings are same with Option1.
 
 0. Launch Azure Machine Learning Studio of your workspace
-1. Click `Desinger` and `Custom` button
+1. Click `Designer` and `Custom` button
 2. Choose `Create a new pipeline using custom components`
 3. Click `Data` to register inputs
 4. As example, We registered olive configuration and model folder as inputs to optimize distilbert model
 5. Search `olive` and click `Component`
-6. You can use either `Olive Optimizer - CPU` or  `Olive Optimizer - GPU` which were created by Microsoft
+6. You can use published components either `Olive Optimizer - CPU` or  `Olive Optimizer - GPU` which were created by Microsoft
 7. Drag the inputs and components and construct all modules
 8. Click `Configure&Submit` to choose the compute, input settings, output settings etc
-9. Then you can run the pipeline job and get the result, you can also use the optimizer outputs in following steps
+9. Then you can run the pipeline job and get the result, you can also use the optimizer outputs in following steps such as profiling/deploy
 
 ![Create a new pipeline in Designer page](pictures/designer_page.png)
 
