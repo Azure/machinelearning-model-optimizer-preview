@@ -52,7 +52,11 @@ You will need a compute to host the optimizer, run the optimization program and 
 
 #### Create an optimization job
 
-Prepare an optimization configuration json file. Below is a sample configuration file. For detailed configuration definitions, please refer to [Olive Optimizer Configuration](#olive-optimizer-configuration).
+#### Option1: Optimize with published optimizer image
+
+We provided two published optimzer images that wrapped olive, you can try with `mcr.microsoft.com/azureml/aml-olive-optimizer:latest` and  `mcr.microsoft.com/azureml/aml-olive-optimizer-gpu:latest`.
+
+User need to prepare an optimization configuration json file(required) and/or model folder and/or code folder as they need. Below is a sample configuration file. For detailed configuration definitions, please refer to [Olive Optimizer Configuration](#olive-optimizer-configuration). And we also prepared some job templates to show how to create a job with published image. 
 
 ```json
 {
@@ -275,6 +279,31 @@ You may download the optimized_parameters file and optimized_model with the foll
 
   az ml job download --name $OPTIMIZER_JOB_NAME --output-name optimized_model  --download-path $OPTIMIZER_DOWNLOAD_FOLDER
   ```
+
+#### Option2: Optimize with published olive components
+
+We also onboard olive components and user can use these components easily.
+
+![Olive components](pictures/olive_components.png)
+
+User can use this pre-defined and published components via UX and the input settings are same with Option1.
+
+0. Launch Azure Machine Learning Studio of your workspace
+1. Click `Desinger` and `Custom` button
+2. Choose `Create a new pipeline using custom components`
+3. Click `Data` to register inputs
+4. As example, We registered olive configuration and model folder as inputs to optimize distilbert model
+5. Search `olive` and click `Component`
+6. You can use either `Olive Optimizer - CPU` or  `Olive Optimizer - GPU` which were created by Microsoft
+7. Drag the inputs and components and construct all modules
+8. Click `Configure&Submit` to choose the compute, input settings, output settings etc
+9. Then you can run the pipeline job and get the result, you can also use the optimizer outputs in following steps
+
+![Create a new pipeline in Designer page](pictures/designer_page.png)
+
+![Register inputs and choose component](pictures/register.png)
+
+![Drag the inputs and components and then choose configure&Submit about the compute settings/outputsettings](pictures/pipline_setting.png)
 
 ### Step 2: Deploy an online-endpoint with the optimized model and optimized parameters
 
