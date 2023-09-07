@@ -2,24 +2,23 @@ $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 command: >
   python -m aml_olive_optimizer
   --config_path ${{inputs.config}}
-  --model_path ${{inputs.model}}
+  --code ${{inputs.code_path}}
   --optimized_parameters_path ${{outputs.optimized_parameters}}
   --optimized_model_path ${{outputs.optimized_model}}
 experiment_name: optimization-demo-job
 name: $OPTIMIZER_JOB_NAME
 tags: 
   optimizationTool: olive
-  modelInputType: uri_folder 
 environment:
   image: mcr.microsoft.com/azureml/aml-olive-optimizer:20230620.v1
 compute: azureml:$OPTIMIZER_COMPUTE_NAME
 inputs:
   config:
     type: uri_file
-    path: ../distilbert_model/distilbert.json
-  model:
+    path: ../bert/bert.json
+  code_path:
     type: uri_folder
-    path: ../distilbert_model/model
+    path: ../bert/code
 outputs:
   optimized_parameters:
     type: uri_folder

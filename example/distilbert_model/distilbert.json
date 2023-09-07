@@ -1,0 +1,70 @@
+{
+    "input_model":{
+        "type": "ONNXModel",
+        "config": {
+            "model_path": "distilbert-base-cased-distilled-squad.onnx"
+        }
+    },
+    "systems": {
+        "local_system": {
+            "type": "LocalSystem",
+            "config": {
+                "accelerators": ["CPU"]
+            }
+        }
+    },
+    "evaluators": {
+        "common_evaluator": {
+            "metrics":[
+                {
+                    "name": "latency",
+                    "type": "latency",
+                    "sub_types": [
+                        {"name": "avg", "priority": 1, "goal": {"type": "percent-min-improvement", "value": 10}}
+                    ],
+                    "user_config":{
+                        "input_names": ["input_ids", "attention_mask"],
+                        "input_shapes": [[1, 128], [1, 128]],
+                        "input_types": ["int64", "int64"]
+                    }
+                }
+            ]
+        }
+    },
+    "passes": {
+        "transformers_optimization": {
+            "type": "OrtTransformersOptimization",
+            "config": {
+                "model_type": "bert",
+                "num_heads": 12,
+                "hidden_size": 768,
+                "float16": false
+            }
+        },
+        "perf_tuning": {
+            "type": "OrtPerfTuning",
+            "config": {
+                "input_names": ["input_ids", "attention_mask"],
+                "input_shapes": [[1, 128], [1, 128]],
+                "input_types": ["int64", "int64"]
+            }
+        }
+    },
+    "engine": {
+        "log_severity_level": 0,
+        "search_strategy": {
+            "execution_order": "joint",
+            "search_algorithm": "tpe",
+            "search_algorithm_config": {
+                "num_samples": 3,
+                "seed": 0
+            }
+        },
+        "evaluator": "common_evaluator",
+        "host": "local_system",
+        "target": "local_system",
+        "execution_providers": ["CPUExecutionProvider"],
+        "clean_cache": true,
+        "cache_dir": "cache"
+    }
+}

@@ -18,7 +18,7 @@ Azure Machine Learning Model Optimizer (preview) provides fully managed experien
 
 The Azure Machine Learning Model Optimizer currently consistes of the following 5 tools:
 
-* `aml-olive-optimizer`: An optimizer based on "Olive". "Olive" is a hardware-aware model optimization tool that composes industry-leading techniques across model compression, optimization, and compilation.. For detailed info please refer to this link. [link](https://github.com/microsoft/Olive).
+* `aml-olive-optimizer`: An optimizer based on "Olive". "Olive" is a hardware-aware model optimization tool that composes industry-leading techniques across model compression, optimization, and compilation.. For detailed info please refer to this link. [link](https://github.com/microsoft/Olive). **IMPORTANT: We didn't support Openvino related engines due to FFmpeg package vulnerability.**
 
 * `aml-wrk-profiler`: A profiler based on "wrk". "wrk" is a modern HTTP benchmarking tool capable of generating significant load when run on a single multi-core CPU. It combines a multithreaded design with scalable event notification systems such as epoll and kqueue. For detailed info please refer to this [link]( https://github.com/wg/wrk).
 
@@ -52,45 +52,208 @@ You will need a compute to host the optimizer, run the optimization program and 
 
 #### Create an optimization job
 
-Prepare an optimization configuration json file. Below is a sample configuration file. For detailed configuration definitions, please refer to [Olive Optimizer Configuration](#olive-optimizer-configuration).
+#### Option1: Optimize with published optimizer image
+
+We provided two published optimzer images that wrapped olive, you can try with `mcr.microsoft.com/azureml/aml-olive-optimizer:latest` and  `mcr.microsoft.com/azureml/aml-olive-optimizer-gpu:latest`.
+
+User need to prepare an optimization configuration json file(required) and/or model folder and/or code folder as they need. Below is a sample configuration file. For detailed configuration definitions, please refer to [Olive Optimizer Configuration](#olive-optimizer-configuration). And we also prepared some job templates to show how to create a job with published image. 
 
 ```json
 {
-  "version": "1.0",
-  "optimizer_config": {
-    "inputs_spec": {"attention_mask": [1, 128], "input_ids": [1, 128]},
-    "model_file_path": "distilbert-base-cased-distilled-squad.onnx",
-    "providers_list": ["cpu"],
-    "inter_thread_num_list": [1],
-    "intra_thread_num_list": [1,2,3,4,5,6],
-    "quantization_enabled": false,
-    "trt_fp16_enabled": false,
-    "transformer_enabled": true,
-    "transformer_args": "--model_type bert --num_heads 12 --hidden_size 768"
-  }
+    "input_model":{
+        "type": "PyTorchModel",
+        "config": {
+            "hf_config": {
+                "model_name": "Intel/bert-base-uncased-mrpc",
+                "task": "text-classification",
+                "dataset": {
+                    "data_name":"glue",
+                    "subset": "mrpc",
+                    "split": "validation",
+                    "input_cols": ["sentence1", "sentence2"],
+                    "label_cols": ["label"],
+                    "batch_size": 1
+                }
+            },
+            "io_config" : {
+                "input_names": ["input_ids", "attention_mask", "token_type_ids"],
+                "input_shapes": [[1, 128], [1, 128], [1, 128]],
+                "input_types": ["int64", "int64", "int64"],
+                "output_names": ["output"],
+                "dynamic_axes": {
+                    "input_ids": {"0": "batch_size", "1": "seq_length"},
+                    "attention_mask": {"0": "batch_size", "1": "seq_length"},
+                    "token_type_ids": {"0": "batch_size", "1": "seq_length"}
+                }
+            }
+        }
+    },
+    "systems": {
+        "local_system": {
+            "type": "LocalSystem",
+            "config": {
+                "accelerators": ["CPU"]
+            }
+        }
+    },
+    "evaluators": {
+        "common_evaluator": {
+            "metrics":[
+                {
+                    "name": "accuracy",
+                    "type": "accuracy",
+                    "sub_types": [
+                        {"name": "accuracy_score", "priority": 1, "goal": {"type": "max-degradation", "value": 0.01}}
+                    ]
+                },
+                {
+                    "name": "latency",
+                    "type": "latency",
+                    "sub_types": [
+                        {"name": "avg", "priority": 2, "goal": {"type": "percent-min-improvement", "value": 20}}
+                    ]
+                }
+            ]
+        }
+    },
+    "passes": {
+        "conversion": {
+            "type": "OnnxConversion",
+            "config": {
+                "target_opset": 13
+            }
+        },
+        "transformers_optimization": {
+            "type": "OrtTransformersOptimization",
+            "config": {
+                "model_type": "bert",
+                "num_heads": 12,
+                "hidden_size": 768,
+                "float16": false
+            }
+        },
+        "perf_tuning": {
+            "type": "OrtPerfTuning",
+            "config": {
+                "input_names": ["input_ids", "attention_mask", "token_type_ids"],
+                "input_shapes": [[1, 128], [1, 128], [1, 128]],
+                "input_types": ["int64", "int64", "int64"]
+            }
+        }
+    },
+    "engine": {
+        "log_severity_level": 0,
+        "search_strategy": {
+            "execution_order": "joint",
+            "search_algorithm": "tpe",
+            "search_algorithm_config": {
+                "num_samples": 3,
+                "seed": 0
+            }
+        },
+        "evaluator": "common_evaluator",
+        "host": "local_system",
+        "target": "local_system",
+        "execution_providers": ["CPUExecutionProvider"],
+        "clean_cache": true,
+        "cache_dir": "cache"
+    }
 }
 ```
+Optimization job use olive configuration directy, but still have some limitations:
+
+* Systems Information: only support `LocalSystem` now,  if config include system type `AzureML` and/or `Docker`, will fail.
+
+* Engine Information:
+
+  1. `search_strategy`: set `output_model_num` to 1 if config not include. If user want to have more than one best candidate models, please set `output_model_num` in advance.
+       
+  2. `packaging_config`: set as default packaging config, and don's support override.
+       
+  ```json
+   "packaging_config": {
+      "type": "Zipfile",
+      "name": "OutputModels"
+   },
+  ```
+
+  3. `plot_pareto_frontier`: set as `true`, which means will plot the pareto frontier of the search results.
+
+  4. `output_dir`: set to job's default artifact output files `./outputs`. All default output files will put here. Suggest user set outputs `optimized_parameters` and `optimized_model` in job template.
 
 Below is a template yaml file that defines an olive optimization job. For detailed info regarding how to construct a command job yaml file, see [AzureML Job Yaml Schema](https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command)
+
+**Template1**:
 
 ```yaml
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 command: >
-  python -m aml_olive_optimizer --config_path ${{inputs.config}} --model_path ${{inputs.model}}
+  python -m aml_olive_optimizer
+  --config_path ${{inputs.config}}
+  --code ${{inputs.code_path}}
+  --model_path ${{inputs.model}}
+  --optimized_parameters_path ${{outputs.optimized_parameters}}
+  --optimized_model_path ${{outputs.optimized_model}}
+experiment_name: optimization-demo-job
+name: $OPTIMIZER_JOB_NAME
+tags:
+  optimizationTool: olive
+environment:
+  # For aceleration on CPU:
+  image: mcr.microsoft.com/azureml/aml-olive-optimizer:20230620.v1
+  # For aceleration on GPU:
+  # image: mcr.microsoft.com/azureml/aml-olive-optimizer-gpu:20230620.v1
+compute: azureml:$OPTIMIZER_COMPUTE_NAME
+inputs:
+  config:
+    type: uri_file
+    path: ../resnet/resnet.json
+  model:
+    type: uri_folder
+    path: ../resnet/models
+  code_path:
+    type: uri_folder
+    path: ../resnet
+outputs:
+  optimized_parameters:
+    type: uri_folder
+  optimized_model:
+    type: uri_folder
+```
+
+**HINT: `config_path` and `model_path` are optional input parameters. User decides use either or both of them.**
+
+**Template2**:
+```yaml
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+command: >
+  python -m aml_olive_optimizer
+  --config_path ${{inputs.config}}
+  --code ${{inputs.code_path}}
+  --optimized_parameters_path ${{outputs.optimized_parameters}}
+  --optimized_model_path ${{outputs.optimized_model}}
 experiment_name: optimization-demo-job
 name: $OPTIMIZER_JOB_NAME
 tags: 
   optimizationTool: olive
 environment:
-  image: mcr.microsoft.com/azureml/aml-olive-optimizer:20230306.2_cpu
+  # For aceleration on CPU:
+  image: mcr.microsoft.com/azureml/aml-olive-optimizer:20230620.v1
+  # For aceleration on GPU:
+  # image: mcr.microsoft.com/azureml/aml-olive-optimizer-gpu:20230620.v1
 compute: azureml:$OPTIMIZER_COMPUTE_NAME
 inputs:
   config:
     type: uri_file
-    path: config.json
-  model:
+    path: ../bert/bert.json
+  code_path:
     type: uri_folder
-    path: ../distilbert_model/model
+    path: ../bert/code
+outputs:
+  optimized_parameters:
+    type: uri_folder
+  optimized_model:
+    type: uri_folder
 ```
 
 You may create this olive optimizer job with the following command:
@@ -101,17 +264,46 @@ You may create this olive optimizer job with the following command:
 
 #### Understand and download job output
 
-The olive optimizer job will generate 3 output files.
+The olive optimizer job will generate below output files into job's default artifact output folder `./outputs`.
 
-* `olive_result.json`: This is the result file generated by Olive, it contains detailed profiling results for all optimization options.
-* `optimized_model.onnx`: This is the optimized model file generated by Olive.
-* `optimized_parameters.json`: This file contains the optimized parameters for the `best_test_name` extracted from the olive_result.json file.
+* `*_footprints.json`: A dictionary of all the footprints generated during the optimization process.
+* `*_pareto_frontier_footprints.json`: A dictionary of the footprints that are on the Pareto frontier based on the metrics goal you set in config of `evaluators.metrics`.
+* `*_pareto_frontier_footprints_footprints_chart.html`: Dump pareto_frontier points to html.
+* `OutputModels.zip`: Generate a ZIP file which includes 3 folders: `CandidateModels`, `SampleCode` and `ONNXRuntimePackages`. Details please find in: [Packaging Olive artifacts](https://github.com/microsoft/Olive/blob/2deaf333a7b1a36c56c748c03b3bdbbc4a7095c7/docs/source/tutorials/packaging_output_models.md).
+* `OutputModels`: Decompressed zip package.
 
-You may download the optimized_parameters.json file and optimized_model.onnx file with the following command, they can be used as inputs of the online-endpoints deployer job.
+You may download the optimized_parameters file and optimized_model with the following command, they can be used as inputs of the online-endpoints deployer job.
 
   ```bash
-  az ml job download --name $OPTIMIZER_JOB_NAME --all --download-path $OPTIMIZER_DOWNLOAD_FOLDER
+  az ml job download --name $OPTIMIZER_JOB_NAME --output-name optimized_parameters --download-path $OPTIMIZER_DOWNLOAD_FOLDER
+
+  az ml job download --name $OPTIMIZER_JOB_NAME --output-name optimized_model  --download-path $OPTIMIZER_DOWNLOAD_FOLDER
   ```
+
+#### Option2: Optimize with published olive components
+
+We also onboard olive components and user can use these components easily.
+
+![Olive components](pictures/olive_components.png)
+
+User can use this pre-defined and published components via UX and the input settings are same with Option1.
+
+0. Launch Azure Machine Learning Studio of your workspace
+1. Click `Designer` and `Custom` button
+2. Choose `Create a new pipeline using custom components`
+3. Click `Data` to register inputs
+4. As example, We registered olive configuration and model folder as inputs to optimize distilbert model
+5. Search `olive` and click `Component`
+6. You can use published components either `Olive Optimizer - CPU` or  `Olive Optimizer - GPU` which were created by Microsoft
+7. Drag the inputs and components and construct all modules
+8. Click `Configure&Submit` to choose the compute, input settings, output settings etc
+9. Then you can run the pipeline job and get the result, you can also use the optimizer outputs in following steps such as profiling/deploy
+
+![Create a new pipeline in Designer page](pictures/designer_page.png)
+
+![Register inputs and choose component](pictures/register.png)
+
+![Drag the inputs and components and then choose configure&Submit about the compute settings/outputsettings](pictures/pipline_setting.png)
 
 ### Step 2: Deploy an online-endpoint with the optimized model and optimized parameters
 
@@ -375,68 +567,48 @@ The deleter job won't generate any output files, but you may also use the below 
 
 ### Olive optimizer configuration
 
-Currently we support setting the following Olive configs:
-<table>
-<tr>
-<th> Configuration </th> <th> Definition </th> <th> Example </th> <th> Default Values </th>
-</tr>
-<tr>
-<td> <code>inputs_spec</code> </td> <td> [Optional] dictionary of input’s names and shapes </td>
-<td>
+Currently we support most OLive configs, but still have below special settings and limitations:
 
-```json
-{
-  "attention_mask": [1, 7],
-  "input_ids": [1, 7],
-  "token_type_ids": [1, 7]
-}
-```
+* Systems Information:
 
-</td> <td> - </td>
-</tr>
-<tr>
-<td> <code>model_file_path</code> </td> <td> [Required] relative path to the model inside of the model folder </td> <td> "./model.onnx" </td> <td> - </td>
-</tr>
-<tr>
-<td> <code>output_names</code> </td> <td> [Optional] comma-separated list of names of output nodes of model </td> <td> "scores" </td> <td> - </td>
-</tr>
-<tr>
-<td> <code>providers_list</code> </td> <td> [Optional] providers used for perftuning </td> <td> ["cpu", "dnnl"] </td> <td> Available providers obtained by onnx runtime </td>
-</tr>
-<tr>
-<td> <code>trt_fp16_enabled</code> </td> <td> [Optional] whether enable fp16 mode for TensorRT </td> <td> true </td> <td> false </td>
-</tr>
-<tr>
-<td> <code>quantization_enabled</code> </td> <td> [Optional] whether enable quantization optimization or not </td> <td> true </td> <td> false </td>
-</tr>
-<tr>
-<td> <code>transformer_enabled</code> </td> <td> [Optional] whether enable transformer optimization or not </td> <td> true </td> <td> false </td>
-</tr>
-<tr>
-<td> <code>transformer_args</code> </td> <td> [Optional] onnxruntime transformer optimizer args </td> <td> "--model_type bert --num_heads 12" </td> <td> - </td>
-</tr>
-<tr>
-<td> <code>concurrency_num</code> </td> <td> [Optional] tuning process concurrency number </td> <td> 2 </td> <td> 1 </td>
-</tr>
-<tr>
-<td> <code>inter_thread_num_list</code> </td> <td> [Optional] list of inter thread number for perftuning </td> <td> [1,2,4] </td> <td> - </td>
-</tr>
-<tr>
-<td> <code>intra_thread_num_list</code> </td> <td> [Optional] list of intra thread number for perftuning </td> <td> [1,2,4] </td> <td> - </td>
-</tr>
-<tr>
-<td> <code>execution_mode_list</code> </td> <td> [Optional] list of execution mode for perftuning </td> <td> ["parallel"] </td> <td> - </td>
-</tr>
-<tr>
-<td> <code>ort_opt_level_list</code> </td> <td> [Optional] onnxruntime optimization level </td> <td> ["all"] </td> <td> ["all"] </td>
-</tr>
-<tr>
-<td> <code>warmup_num</code> </td> <td> [Optional] warmup times for latency measurement </td> <td> 20 </td> <td> 10 </td>
-</tr>
-<tr>
-<td> <code>test_num</code> </td> <td> [Optional] repeat test times for latency measurement </td> <td> 200 </td> <td> 20 </td>
-</tr>
-</table>
+  <table>
+  <tr>
+  <th> Configuration </th> <th> Definition </th> <th> Example </th> <th> Default Values </th>
+  </tr>
+  <tr>
+  <td> <code>type</code> </td> <td> The type of the system. Only support "LocalSystem" for olive optimizer, "AzureML" and "Docker" are not supported. </td> <td> "LocalSystem" </td> <td> - </td>
+  </tr>
+  </table>
+
+* Engine Information:
+
+  <table>
+  <tr>
+  <th> Configuration </th> <th> Definition </th> <th> Example </th> <th> Default Values </th>
+  </tr>
+  <tr>
+  <td> <code> packaging_config </code> </td> <td> Olive artifacts packaging configurations. If not specified, Olive will not package artifacts </td>
+  <td> DON'T SET, WILL BE OVERRIDED BY DEFAULT VALUE </td>
+  <td> 
+
+  ```json
+    "packaging_config": {
+        "type": "Zipfile",
+        "name": "OutputModels"
+    }
+  ```
+  </td>
+  </tr>
+  <tr>
+  <td> <code> output_model_num </code> </td> <td>  The number of output models from the engine based on metric priority. If user want to have more than one best candidate models, please set "output_model_num" below "search_strategy" in advance.</td> <td> 1 </td> <td> 1 </td>
+  </tr>
+  <tr>
+  <td> <code> plot_pareto_frontier </code> </td> <td> This decides whether to plot the pareto frontier of the search results. </td> <td> true </td> <td> true </td>
+  </tr>
+  <tr>
+  <td> <code> output_dir </code> </td> <td> The directory to store the output of the engine. Set to job's default artifact output files "./outputs" </td> <td> DON'T SET, WILL BE OVERRIDED BY DEFAULT VALUE </td> <td> "./outputs" </td>
+  </tr>
+  </table>
 
 ### AzureML profiler configuration
 
